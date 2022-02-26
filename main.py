@@ -51,8 +51,12 @@ if __name__ == '__main__':
                             else:
                                 send_msg({'msg_type': 'group', 'number': group, 'msg': '[CQ:poke,qq={}]'.format(qq)})
                                 getImg()
-                                send_msg({'msg_type': 'group', 'number': group,
-                                          'msg': '[CQ:image,file={},cache=0]'.format('http://120.25.223.76/output.png')})
+                                if a.dt in rev['raw_message']:
+                                    send_msg({'msg_type': 'group', 'number': group,
+                                              'msg': '[CQ:cardimage,file={}]'.format('http://120.25.223.76/output.png')})
+                                else:
+                                    send_msg({'msg_type': 'group', 'number': group,
+                                              'msg': '[CQ:image,file={},cache=0]'.format('http://120.25.223.76/output.png')})
                                 a.qq_list.append(qq)
                         # 转语音
                         elif a.yy in rev['raw_message']:

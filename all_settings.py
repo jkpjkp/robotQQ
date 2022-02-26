@@ -2,6 +2,7 @@
 robotQQ = '447715572'
 myGroup = '594812305'
 mn = 'mn'
+dt = 'dt'
 yy = 'yy'
 myb = 'myb'
 id_list = []
