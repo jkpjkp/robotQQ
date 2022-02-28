@@ -3,19 +3,19 @@ import all_settings as a
 
 from baiduAI import baiduAI
 from getImg import getImg
+from getMusic import getMusic
 from getMyb import getMyb
 from receive import rev_msg
 from schedulerJob import sendTianQi, removeList
 from send import send_msg
 from apscheduler.schedulers.background import BackgroundScheduler
 
-
 if __name__ == '__main__':
     # 初始化百度AI
     ai = baiduAI()
 
     # 启动定时任务
-    scheduler = BackgroundScheduler()
+    scheduler = BackgroundScheduler(timezone="Asia/Shanghai")
     scheduler.add_job(sendTianQi, 'cron', args=[ai], hour=8, minute=0)
     scheduler.add_job(removeList, 'cron', hour=0, minute=0)
     scheduler.start()
@@ -41,28 +41,24 @@ if __name__ == '__main__':
                     group = rev['group_id']
                     if "[CQ:at,qq={}]".format(a.robotQQ) in rev["raw_message"]:
                         qq = rev['sender']['user_id']
-                        if '清空瑟图上限' in rev['raw_message']:
-                            a.qq_list = []
                         # 图片
-                        elif a.mn in rev['raw_message']:
+                        if a.mn in rev['raw_message']:
                             if qq in a.qq_list:
-                                msg = '[CQ:at,qq={}] 当日瑟图上限\n＞︿＜'.format(qq)
+                                msg = '[CQ:at,qq={}]鸡儿给你掰断[CQ:face,id=123]'.format(qq)
                                 send_msg({'msg_type': 'group', 'number': group, 'msg': msg})
                             else:
                                 send_msg({'msg_type': 'group', 'number': group, 'msg': '[CQ:poke,qq={}]'.format(qq)})
                                 getImg()
-                                if a.dt in rev['raw_message']:
-                                    send_msg({'msg_type': 'group', 'number': group,
-                                              'msg': '[CQ:cardimage,file={}]'.format('http://120.25.223.76/output.png')})
-                                else:
-                                    send_msg({'msg_type': 'group', 'number': group,
-                                              'msg': '[CQ:image,file={},cache=0]'.format('http://120.25.223.76/output.png')})
+                                send_msg({'msg_type': 'group', 'number': group,
+                                          'msg': '[CQ:image,file={},cache=0]'.format(
+                                              'http://120.25.223.76/output.png')})
                                 a.qq_list.append(qq)
-                        # 转语音
-                        elif a.yy in rev['raw_message']:
+                        #网易云
+                        elif a.wyy in rev['raw_message']:
                             send_msg({'msg_type': 'group', 'number': group, 'msg': '[CQ:poke,qq={}]'.format(qq)})
-                            send_msg({'msg_type': 'group', 'number': group, 'msg': '[CQ:tts,text={}]'.format(
-                                rev['raw_message'].split(a.yy)[1].replace('\r', '').replace('\n', ''))})
+                            msg = rev['raw_message'].replace('[CQ:at,qq={}] '.format(a.robotQQ), '').replace(a.wyy, '')
+                            musicId = getMusic(msg)
+                            send_msg({'msg_type': 'group', 'number': group, 'msg': '[CQ:music,type=163,id={}]'.format(musicId)})
                         # 摸鱼办
                         elif a.myb in rev['raw_message']:
                             send_msg({'msg_type': 'group', 'number': group, 'msg': '[CQ:poke,qq={}]'.format(qq)})
